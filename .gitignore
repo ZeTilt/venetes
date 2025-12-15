@@ -18,3 +18,5 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+env.local.beta.txt
+env.local.*.txt
