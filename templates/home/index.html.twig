@@ -59,7 +59,7 @@
                                     </a>
                                 </div>
                                 <div class="event-date">
-                                    {{ event.startDate|date('l j F') }}
+                                    {{ event.startDate|date_fr('l j F') }}
                                 </div>
                                 <div class="event-time" style="color: {{ event.color ?? '#FD7E29' }}">
                                     {{ event.startDate|date('H:i') }}
