@@ -483,12 +483,12 @@
     </script>
 
     <!-- Push Notifications -->
-    <script src="{{ asset('js/push-notifications' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}" defer></script>
+    <script src="{{ asset('js/push-notifications' ~ (app.environment == 'prod' ? '.min' : '') ~ '.js') }}"></script>
     <script>
         // Initialiser le gestionnaire de notifications push
         window.pushManager = null;
 
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
+        if ('serviceWorker' in navigator && 'PushManager' in window && typeof PushNotifications !== 'undefined') {
             window.pushManager = new PushNotifications('{{ vapid_public_key() }}');
 
             // Initialiser au chargement

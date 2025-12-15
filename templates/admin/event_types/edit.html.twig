@@ -161,6 +161,21 @@
                         </div>
                         <p class="mt-1 text-sm text-gray-500">Si coché, les participants pourront s'inscrire en tant que surveillant de baignade pour les événements de ce type</p>
                     </div>
+
+                    <div class="sm:col-span-2 border-t border-gray-200 pt-4 mt-2">
+                        <div class="flex items-center">
+                            <input type="checkbox"
+                                   name="notify_on_creation"
+                                   id="notify_on_creation"
+                                   value="1"
+                                   {{ eventType.isNotifyOnCreation is defined and eventType.isNotifyOnCreation ? 'checked' : '' }}
+                                   class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
+                            <label for="notify_on_creation" class="ml-2 block text-sm text-gray-900">
+                                Avertir les utilisateurs lors de la création d'un événement de ce type
+                            </label>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Si coché, tous les membres abonnés aux notifications recevront une alerte quand un événement de ce type est créé</p>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-between pt-6 border-t border-gray-200">

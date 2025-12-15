@@ -42,6 +42,9 @@ class EventType
     #[ORM\Column(type: 'boolean')]
     private bool $requiresLifeguard = false;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $notifyOnCreation = false;
+
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'eventType')]
     private Collection $events;
 
@@ -182,6 +185,17 @@ class EventType
     public function setRequiresLifeguard(bool $requiresLifeguard): static
     {
         $this->requiresLifeguard = $requiresLifeguard;
+        return $this;
+    }
+
+    public function isNotifyOnCreation(): bool
+    {
+        return $this->notifyOnCreation;
+    }
+
+    public function setNotifyOnCreation(bool $notifyOnCreation): static
+    {
+        $this->notifyOnCreation = $notifyOnCreation;
         return $this;
     }
 
