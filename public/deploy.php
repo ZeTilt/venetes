@@ -136,12 +136,13 @@ $composerCmd = (strpos($composer, '.phar') !== false)
     ? "$php $composer"
     : $composer;
 
-// Préfixe pour les variables d'environnement
-$envPrefix = "HOME=$homeDir COMPOSER_HOME=$projectDir/.composer";
+// Préfixe pour les variables d'environnement (APP_ENV=prod évite de charger les bundles dev)
+$envPrefix = "HOME=$homeDir COMPOSER_HOME=$projectDir/.composer APP_ENV=prod";
 
 // Étapes de déploiement
 $steps = [
-    'Composer install' => "$envPrefix $composerCmd install --no-dev --optimize-autoloader --no-interaction",
+    'Composer install' => "$envPrefix $composerCmd install --no-dev --optimize-autoloader --no-interaction --no-scripts",
+    'Composer scripts' => "$envPrefix $composerCmd run-script post-install-cmd --no-interaction 2>&1 || true",
     'Cache clear' => "$php bin/console cache:clear --env=prod --no-interaction",
     'Cache warmup' => "$php bin/console cache:warmup --env=prod --no-interaction",
     'Assets install' => "$php bin/console assets:install public --env=prod --no-interaction",
