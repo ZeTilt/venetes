@@ -35,13 +35,6 @@ echo "$ $cmd\n";
 passthru($cmd, $code2);
 echo "\nCode retour: $code2\n\n";
 
-// Étape 3: Charger les fixtures (données de base)
-echo "--- Chargement des fixtures ---\n";
-$cmd = "$php bin/console doctrine:fixtures:load --no-interaction --env=prod 2>&1";
-echo "$ $cmd\n";
-passthru($cmd, $code3);
-echo "\nCode retour: $code3\n\n";
-
 echo "=== FIN INITIALISATION ===\n";
 if ($code1 === 0 && $code2 === 0) {
     echo "✅ Base de donnees initialisee avec succes!\n";
