@@ -26,62 +26,111 @@ chdir($projectDir);
 echo "=== DEPLOIEMENT VENETES (OVH Mutualise) ===\n";
 echo "Date: " . date('Y-m-d H:i:s') . "\n";
 echo "Repertoire: $projectDir\n";
-echo "PHP: " . PHP_VERSION . "\n\n";
+echo "PHP version: " . PHP_VERSION . "\n\n";
 
-// Trouver composer sur OVH
+// Trouver PHP sur OVH mutualisé
+$phpPaths = [
+    '/usr/local/php8.3/bin/php',
+    '/usr/local/php8.2/bin/php',
+    '/usr/local/php8.1/bin/php',
+    '/usr/bin/php8.3',
+    '/usr/bin/php',
+    'php',
+];
+
+$php = null;
+echo "--- Recherche PHP CLI ---\n";
+foreach ($phpPaths as $path) {
+    if (file_exists($path) || ($path === 'php')) {
+        exec("$path -v 2>&1", $output, $code);
+        if ($code === 0 && !empty($output)) {
+            $php = $path;
+            echo "PHP trouve: $path\n";
+            echo $output[0] . "\n";
+            break;
+        }
+        $output = [];
+    }
+}
+
+if (!$php) {
+    // Essayer de trouver PHP via which
+    exec('which php 2>&1', $whichOutput, $code);
+    if ($code === 0 && !empty($whichOutput)) {
+        $php = trim($whichOutput[0]);
+        echo "PHP trouve via which: $php\n";
+    }
+}
+
+if (!$php) {
+    echo "[ERREUR] PHP CLI non trouve!\n";
+    echo "Chemins testes:\n";
+    foreach ($phpPaths as $path) {
+        echo "  - $path\n";
+    }
+    exit(1);
+}
+echo "\n";
+
+// Trouver ou télécharger Composer
 $composerPaths = [
+    $projectDir . '/composer.phar',
     '/usr/local/bin/composer',
     '/usr/bin/composer',
-    'composer',
-    'composer.phar',
-    $projectDir . '/composer.phar',
 ];
 
 $composer = null;
+echo "--- Recherche Composer ---\n";
 foreach ($composerPaths as $path) {
-    exec("which $path 2>/dev/null", $output, $code);
-    if ($code === 0 || file_exists($path)) {
+    if (file_exists($path)) {
         $composer = $path;
+        echo "Composer trouve: $path\n";
         break;
     }
-    $output = [];
 }
 
-// Si composer n'est pas trouvé, le télécharger
 if (!$composer) {
-    echo "--- Telechargement de Composer ---\n";
-    $composerSetup = file_get_contents('https://getcomposer.org/installer');
-    file_put_contents('composer-setup.php', $composerSetup);
-    exec('php composer-setup.php --quiet 2>&1', $output, $code);
-    unlink('composer-setup.php');
-    if (file_exists($projectDir . '/composer.phar')) {
-        $composer = 'php ' . $projectDir . '/composer.phar';
-        echo "Composer telecharge: composer.phar\n\n";
-    } else {
-        echo "[ERREUR] Impossible de telecharger Composer\n";
-        echo implode("\n", $output) . "\n";
+    echo "Composer non trouve, telechargement...\n";
+
+    // Télécharger composer via PHP (pas via exec)
+    $installerUrl = 'https://getcomposer.org/installer';
+    $installerCode = @file_get_contents($installerUrl);
+
+    if ($installerCode === false) {
+        echo "[ERREUR] Impossible de telecharger l'installeur Composer\n";
         exit(1);
     }
-} else {
-    echo "Composer trouve: $composer\n\n";
-    // Si c'est un chemin vers composer.phar, préfixer avec php
-    if (strpos($composer, '.phar') !== false && strpos($composer, 'php ') === false) {
-        $composer = 'php ' . $composer;
+
+    file_put_contents($projectDir . '/composer-setup.php', $installerCode);
+
+    // Exécuter l'installeur
+    exec("$php {$projectDir}/composer-setup.php --install-dir={$projectDir} --filename=composer.phar 2>&1", $output, $code);
+    echo implode("\n", $output) . "\n";
+
+    @unlink($projectDir . '/composer-setup.php');
+
+    if (file_exists($projectDir . '/composer.phar')) {
+        $composer = $projectDir . '/composer.phar';
+        echo "Composer telecharge avec succes!\n";
+    } else {
+        echo "[ERREUR] Echec du telechargement de Composer\n";
+        exit(1);
     }
 }
+echo "\n";
 
-// Vérifier PHP CLI
-echo "--- Verification PHP CLI ---\n";
-exec('php -v 2>&1', $phpVersion, $code);
-echo implode("\n", array_slice($phpVersion, 0, 1)) . "\n\n";
+// Construire les commandes avec le bon chemin PHP
+$composerCmd = (strpos($composer, '.phar') !== false)
+    ? "$php $composer"
+    : $composer;
 
 // Étapes de déploiement
 $steps = [
-    'Composer install' => "$composer install --no-dev --optimize-autoloader --no-interaction 2>&1",
-    'Cache clear' => 'php bin/console cache:clear --env=prod --no-interaction 2>&1',
-    'Cache warmup' => 'php bin/console cache:warmup --env=prod --no-interaction 2>&1',
-    'Assets install' => 'php bin/console assets:install public --env=prod --no-interaction 2>&1',
-    'Migrations' => 'php bin/console doctrine:migrations:migrate --no-interaction --env=prod --allow-no-migration 2>&1',
+    'Composer install' => "$composerCmd install --no-dev --optimize-autoloader --no-interaction",
+    'Cache clear' => "$php bin/console cache:clear --env=prod --no-interaction",
+    'Cache warmup' => "$php bin/console cache:warmup --env=prod --no-interaction",
+    'Assets install' => "$php bin/console assets:install public --env=prod --no-interaction",
+    'Migrations' => "$php bin/console doctrine:migrations:migrate --no-interaction --env=prod --allow-no-migration",
 ];
 
 $success = true;
@@ -89,14 +138,13 @@ $errors = [];
 
 foreach ($steps as $name => $command) {
     echo "--- $name ---\n";
-    echo "Commande: $command\n";
+    echo "$ $command\n";
     $output = [];
     $returnCode = 0;
 
-    exec($command, $output, $returnCode);
+    exec("$command 2>&1", $output, $returnCode);
 
-    $outputStr = implode("\n", $output);
-    echo $outputStr . "\n";
+    echo implode("\n", $output) . "\n";
 
     if ($returnCode !== 0) {
         echo "[ERREUR] Code retour: $returnCode\n";
@@ -132,24 +180,30 @@ echo "\n--- Test connexion base de donnees ---\n";
 try {
     if (file_exists($projectDir . '/vendor/autoload.php')) {
         require $projectDir . '/vendor/autoload.php';
-        $dotenv = new \Symfony\Component\Dotenv\Dotenv();
-        $dotenv->loadEnv($projectDir . '/.env');
 
-        $dbUrl = $_ENV['DATABASE_URL'] ?? '';
+        // Charger les variables d'environnement
+        if (file_exists($projectDir . '/.env.local')) {
+            $dotenv = new \Symfony\Component\Dotenv\Dotenv();
+            $dotenv->loadEnv($projectDir . '/.env');
+        }
+
+        $dbUrl = $_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? '';
         if ($dbUrl) {
             $params = parse_url($dbUrl);
             $dbname = ltrim($params['path'] ?? '', '/');
             $pdo = new PDO(
                 "mysql:host={$params['host']};port=" . ($params['port'] ?? 3306) . ";dbname=$dbname",
                 $params['user'] ?? '',
-                $params['pass'] ?? '',
+                urldecode($params['pass'] ?? ''),
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
             );
-            echo "[OK] Connexion base de donnees reussie\n";
+            echo "[OK] Connexion BDD reussie ($dbname)\n";
+        } else {
+            echo "[WARN] DATABASE_URL non defini\n";
         }
     }
 } catch (Exception $e) {
-    echo "[ERREUR] Base de donnees: " . $e->getMessage() . "\n";
+    echo "[ERREUR] BDD: " . $e->getMessage() . "\n";
     $success = false;
 }
 
@@ -162,8 +216,7 @@ echo "Duree: " . round(microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'], 2) . "s
 
 if ($success) {
     echo "\n✅ Deploiement termine avec succes!\n";
-    echo "Testez le site: https://beta.plongee-venetes.fr\n";
+    echo "Testez: https://beta.plongee-venetes.fr\n";
 } else {
-    echo "\n⚠️ Deploiement termine avec des erreurs.\n";
-    echo "Verifiez les messages ci-dessus.\n";
+    echo "\n⚠️ Deploiement avec erreurs - verifiez ci-dessus\n";
 }
