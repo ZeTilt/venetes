@@ -13,12 +13,16 @@
 
 {% block body %}
 <!-- Hero Carousel - Version vanilla JS optimisée -->
-<section class="hero-carousel" data-slides='[
-    {"image": "{{ asset("assets/images/IMG_1679-1080x500.webp") }}"},
-    {"image": "{{ asset("assets/images/IMG_1753-01-1080x500.webp") }}"},
-    {"image": "{{ asset("assets/images/DSC036181-1080x500.webp") }}"},
-    {"image": "{{ asset("assets/images/P1020334-1080x500.webp") }}"}
-]'>
+{% set heroImages = site_config('hero_images')|default('[]')|json_decode %}
+{% if heroImages|length == 0 %}
+    {% set heroImages = [
+        asset('assets/images/IMG_1679-1080x500.webp'),
+        asset('assets/images/IMG_1753-01-1080x500.webp'),
+        asset('assets/images/DSC036181-1080x500.webp'),
+        asset('assets/images/P1020334-1080x500.webp')
+    ] %}
+{% endif %}
+<section class="hero-carousel" data-slides='[{% for image in heroImages %}{"image": "{{ image }}"}{% if not loop.last %},{% endif %}{% endfor %}]'>
     <div class="hero-slides">
         {# Le contenu sera généré par JavaScript #}
     </div>

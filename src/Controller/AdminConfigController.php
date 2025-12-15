@@ -60,7 +60,7 @@ class AdminConfigController extends AbstractController
                     $this->getParameter('kernel.project_dir').'/public/uploads/documents',
                     $newFilename
                 );
-                
+
                 // Remove old file if exists
                 $currentTarifsPath = $this->siteConfigService->get('tarifs_pdf');
                 if ($currentTarifsPath) {
@@ -69,13 +69,41 @@ class AdminConfigController extends AbstractController
                         unlink($oldFilePath);
                     }
                 }
-                
+
                 $this->siteConfigService->set('tarifs_pdf', '/uploads/documents/'.$newFilename, 'Fichier PDF des tarifs');
                 $this->addFlash('success', 'Fichier des tarifs uploadé avec succès.');
             } catch (FileException $e) {
                 $this->addFlash('error', 'Erreur lors de l\'upload du fichier.');
             }
         }
+
+        // Handle hero images
+        $existingHeroImages = json_decode($request->request->get('hero_images', '[]'), true) ?: [];
+        $heroFiles = $request->files->get('hero_images_upload');
+
+        if ($heroFiles) {
+            $uploadDir = $this->getParameter('kernel.project_dir').'/public/uploads/hero';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            foreach ($heroFiles as $heroFile) {
+                if ($heroFile) {
+                    $originalFilename = pathinfo($heroFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = $this->slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$heroFile->guessExtension();
+
+                    try {
+                        $heroFile->move($uploadDir, $newFilename);
+                        $existingHeroImages[] = '/uploads/hero/'.$newFilename;
+                    } catch (FileException $e) {
+                        $this->addFlash('error', 'Erreur lors de l\'upload d\'une image hero.');
+                    }
+                }
+            }
+        }
+
+        $this->siteConfigService->set('hero_images', json_encode($existingHeroImages), 'Images du carousel d\'accueil');
 
         $this->addFlash('success', 'Configuration sauvegardée avec succès.');
 
