@@ -103,8 +103,14 @@ if (!$composer) {
 
     file_put_contents($projectDir . '/composer-setup.php', $installerCode);
 
+    // Définir HOME pour Composer (requis sur OVH mutualisé)
+    $homeDir = getenv('HOME') ?: $projectDir;
+    putenv("HOME=$homeDir");
+    putenv("COMPOSER_HOME=$projectDir/.composer");
+    @mkdir($projectDir . '/.composer', 0755, true);
+
     // Exécuter l'installeur
-    exec("$php {$projectDir}/composer-setup.php --install-dir={$projectDir} --filename=composer.phar 2>&1", $output, $code);
+    exec("HOME=$homeDir COMPOSER_HOME=$projectDir/.composer $php {$projectDir}/composer-setup.php --install-dir={$projectDir} --filename=composer.phar 2>&1", $output, $code);
     echo implode("\n", $output) . "\n";
 
     @unlink($projectDir . '/composer-setup.php');
@@ -119,14 +125,23 @@ if (!$composer) {
 }
 echo "\n";
 
+// Définir les variables d'environnement pour Composer
+$homeDir = getenv('HOME') ?: $projectDir;
+putenv("HOME=$homeDir");
+putenv("COMPOSER_HOME=$projectDir/.composer");
+@mkdir($projectDir . '/.composer', 0755, true);
+
 // Construire les commandes avec le bon chemin PHP
 $composerCmd = (strpos($composer, '.phar') !== false)
     ? "$php $composer"
     : $composer;
 
+// Préfixe pour les variables d'environnement
+$envPrefix = "HOME=$homeDir COMPOSER_HOME=$projectDir/.composer";
+
 // Étapes de déploiement
 $steps = [
-    'Composer install' => "$composerCmd install --no-dev --optimize-autoloader --no-interaction",
+    'Composer install' => "$envPrefix $composerCmd install --no-dev --optimize-autoloader --no-interaction",
     'Cache clear' => "$php bin/console cache:clear --env=prod --no-interaction",
     'Cache warmup' => "$php bin/console cache:warmup --env=prod --no-interaction",
     'Assets install' => "$php bin/console assets:install public --env=prod --no-interaction",
