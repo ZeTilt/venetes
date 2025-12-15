@@ -109,8 +109,9 @@ class RegistrationController extends AbstractController
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
+        $fromEmail = $_ENV['MAILER_FROM'] ?? 'no-reply@plongee-venetes.fr';
         $email = (new Email())
-            ->from('no-reply@venetes.dhuicque.fr')
+            ->from($fromEmail)
             ->to($user->getEmail())
             ->subject('Vérification de votre adresse email - Club Subaquatique des Vénètes')
             ->html($this->renderView('emails/verify_email.html.twig', [

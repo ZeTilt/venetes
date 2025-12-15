@@ -80,12 +80,12 @@ class MembershipController extends AbstractController
             return $this->redirectToRoute('dp_membership_list');
         }
 
-        $amount = $request->request->get('amount');
+        $amount = $request->request->get('amount') ?: 0;
         $paymentMethod = $request->request->get('payment_method');
         $season = $request->request->get('season') ?: User::getCurrentSeason();
 
-        if (!$amount || !$paymentMethod) {
-            $this->addFlash('error', 'Le montant et le mode de paiement sont requis.');
+        if (!$paymentMethod) {
+            $this->addFlash('error', 'Le mode de paiement est requis.');
             return $this->redirectToRoute('dp_membership_list');
         }
 
@@ -139,7 +139,7 @@ class MembershipController extends AbstractController
         }
 
         $userIds = $request->request->all('user_ids');
-        $amount = $request->request->get('batch_amount');
+        $amount = $request->request->get('batch_amount') ?: 0;
         $paymentMethod = $request->request->get('batch_payment_method');
 
         if (empty($userIds)) {
@@ -147,8 +147,8 @@ class MembershipController extends AbstractController
             return $this->redirectToRoute('dp_membership_list');
         }
 
-        if (!$amount || !$paymentMethod) {
-            $this->addFlash('error', 'Le montant et le mode de paiement sont requis.');
+        if (!$paymentMethod) {
+            $this->addFlash('error', 'Le mode de paiement est requis.');
             return $this->redirectToRoute('dp_membership_list');
         }
 
