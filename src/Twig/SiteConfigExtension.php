@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use App\Service\SiteConfigService;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class SiteConfigExtension extends AbstractExtension
@@ -21,6 +22,13 @@ class SiteConfigExtension extends AbstractExtension
         ];
     }
 
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('json_decode', [$this, 'jsonDecode']),
+        ];
+    }
+
     public function getSiteConfig(string $key, ?string $default = null): ?string
     {
         return $this->siteConfigService->get($key, $default);
@@ -29,5 +37,13 @@ class SiteConfigExtension extends AbstractExtension
     public function getClubInfo(): array
     {
         return $this->siteConfigService->getClubInfo();
+    }
+
+    public function jsonDecode(?string $json): array
+    {
+        if (!$json) {
+            return [];
+        }
+        return json_decode($json, true) ?: [];
     }
 }
