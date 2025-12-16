@@ -141,6 +141,7 @@ $envPrefix = "HOME=$homeDir COMPOSER_HOME=$projectDir/.composer APP_ENV=prod";
 
 // Étapes de déploiement
 $steps = [
+    'Git pull' => "git pull origin release 2>&1",
     'Composer install' => "$envPrefix $composerCmd install --no-dev --optimize-autoloader --no-interaction --no-scripts",
     'Composer scripts' => "$envPrefix $composerCmd run-script post-install-cmd --no-interaction 2>&1 || true",
     'Cache clear' => "$php bin/console cache:clear --env=prod --no-interaction",
