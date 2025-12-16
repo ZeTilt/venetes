@@ -130,14 +130,14 @@
                                                         </div>
                                                     {% endif %}
 
-                                                    <!-- Option surveillant de baignade si type d'événement le requiert -->
-                                                    {% if event.eventType and event.eventType.requiresLifeguard() %}
+                                                    <!-- Option surveillant de baignade si type d'événement le requiert ET que l'utilisateur est surveillant -->
+                                                    {% if event.eventType and event.eventType.requiresLifeguard() and app.user.isLifeguard() %}
                                                         <div>
                                                             <label class="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-md cursor-pointer hover:bg-blue-100">
                                                                 <input type="checkbox" name="is_lifeguard" value="1" class="h-4 w-4 text-club-orange focus:ring-club-orange border-gray-300 rounded">
                                                                 <div class="ml-3 flex-1">
-                                                                    <div class="font-medium text-sm text-blue-900">🏊 Je suis surveillant de baignade</div>
-                                                                    <div class="text-xs text-blue-700">Je participe en tant que surveillant pour cet événement</div>
+                                                                    <div class="font-medium text-sm text-blue-900">🏊 Je participe en tant que surveillant de baignade</div>
+                                                                    <div class="text-xs text-blue-700">Je m'inscris comme surveillant pour cet événement</div>
                                                                 </div>
                                                             </label>
                                                         </div>

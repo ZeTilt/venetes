@@ -73,6 +73,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isPilot = false;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isLifeguard = false;
+
     // Nouveaux champs pour remplacer le système EAV
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $licenceNumber = null;
@@ -384,6 +387,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPilot(bool $isPilot): static
     {
         $this->isPilot = $isPilot;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function isLifeguard(): bool
+    {
+        return $this->isLifeguard;
+    }
+
+    public function setLifeguard(bool $isLifeguard): static
+    {
+        $this->isLifeguard = $isLifeguard;
         $this->updatedAt = new \DateTimeImmutable();
         return $this;
     }

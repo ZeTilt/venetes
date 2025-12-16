@@ -258,6 +258,7 @@ class UserProfileController extends AbstractController
         $user->setDiver((bool) $request->request->get('is_diver'));
         $user->setFreediver((bool) $request->request->get('is_freediver'));
         $user->setPilot((bool) $request->request->get('is_pilot'));
+        $user->setLifeguard((bool) $request->request->get('is_lifeguard'));
 
         // Mise à jour du niveau de plongée bouteille
         if ($user->isDiver()) {
