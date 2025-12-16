@@ -257,12 +257,16 @@
                         </div>
                     </div>
 
-                    <!-- Organisation (DP, Pilote, Bateau) -->
-                    {% if event.divingDirector or event.pilot or event.boat %}
+                    <!-- Organisation (DP, Pilote, Bateau) - Affichage conditionnel selon le type d'événement -->
+                    {% set showDp = event.eventType and event.eventType.requiresDivingDirector() and event.divingDirector %}
+                    {% set showPilot = event.eventType and event.eventType.requiresPilot() and event.pilot %}
+                    {% set showBoat = event.boat %}
+
+                    {% if showDp or showPilot or showBoat %}
                         <div class="bg-gradient-to-br from-club-blue/5 to-club-blue/10 rounded-lg p-6 border border-club-blue/20">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-lg font-semibold text-club-blue">👥 Organisation</h3>
-                                {% if app.user and event.divingDirector and app.user.id == event.divingDirector.id %}
+                                {% if app.user and showDp and app.user.id == event.divingDirector.id %}
                                     <a href="{{ path('dp_events_participants', {id: event.id}) }}"
                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md text-white bg-club-orange hover:bg-club-orange-dark transition-colors">
                                         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +277,7 @@
                                 {% endif %}
                             </div>
                             <div class="space-y-3">
-                                {% if event.divingDirector %}
+                                {% if showDp %}
                                     <div class="flex items-start p-3 bg-white rounded-lg">
                                         <span class="text-2xl mr-3">🤿</span>
                                         <div class="flex-1">
@@ -283,7 +287,7 @@
                                     </div>
                                 {% endif %}
 
-                                {% if event.pilot %}
+                                {% if showPilot %}
                                     <div class="flex items-start p-3 bg-white rounded-lg">
                                         <span class="text-2xl mr-3">⛵</span>
                                         <div class="flex-1">
@@ -293,7 +297,7 @@
                                     </div>
                                 {% endif %}
 
-                                {% if event.boat %}
+                                {% if showBoat %}
                                     <div class="flex items-start p-3 bg-white rounded-lg">
                                         <span class="text-2xl mr-3">🚤</span>
                                         <div class="flex-1">
@@ -312,7 +316,7 @@
                                 {% endif %}
 
                                 <!-- Contact si on a un DP -->
-                                {% if event.divingDirector %}
+                                {% if showDp %}
                                     <div class="pt-3 border-t border-club-blue/20">
                                         <div class="text-xs text-gray-600">
                                             Pour toute question sur cet événement, contactez le Directeur de Plongée.
