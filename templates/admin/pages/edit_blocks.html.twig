@@ -124,6 +124,18 @@
                     <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg></span>
                     <span class="text-xs font-medium">Bouton</span>
                 </button>
+                <button type="button" class="block-type-option" data-type="alert_box" style="border-color: #fde68a;">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
+                    <span class="text-xs font-medium">Alerte</span>
+                </button>
+                <button type="button" class="block-type-option" data-type="hero_banner" style="border-color: #c4b5fd;">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></span>
+                    <span class="text-xs font-medium">Bandeau</span>
+                </button>
+                <button type="button" class="block-type-option" data-type="feature_list" style="border-color: #a7f3d0;">
+                    <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></span>
+                    <span class="text-xs font-medium">Liste</span>
+                </button>
                 {% for widgetKey, widgetLabel in widgets %}
                 <button type="button" class="block-type-option widget-type" data-type="widget" data-widget="{{ widgetKey }}">
                     <span class="icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2"/></svg></span>
@@ -148,6 +160,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+{% if google_maps_api_key() %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key() }}&libraries=places&callback=initGoogleMapsAutocomplete" async defer></script>
+{% endif %}
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -170,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'partners': [{key: 'title', label: 'Titre', type: 'text', default: 'Nos partenaires'}],
         'contact': [{key: 'title', label: 'Titre', type: 'text', default: 'Contactez-nous'}],
         'pricing': [{key: 'title', label: 'Titre', type: 'text', default: 'Tarifs'}],
-        'map': [{key: 'title', label: 'Titre', type: 'text', default: 'Où nous trouver'}, {key: 'address', label: 'Adresse', type: 'text', default: 'Vannes, France'}],
+        'map': [{key: 'title', label: 'Titre', type: 'text', default: 'Où nous trouver'}, {key: 'address', label: 'Adresse', type: 'text', default: 'Vannes, France', autocomplete: 'address'}],
         'gallery': [
             {key: 'gallery_id', label: 'Galerie', type: 'select', options: availableGalleries.map(g => ({value: g.id, label: `${g.title} (${g.imageCount} photos)`})), default: ''},
             {key: 'columns', label: 'Colonnes', type: 'number', default: 3},
@@ -233,6 +248,12 @@ document.addEventListener('DOMContentLoaded', function() {
             blockEl.innerHTML = createImageBlockHTML(data);
         } else if (type === 'cta') {
             blockEl.innerHTML = createCtaBlockHTML(data);
+        } else if (type === 'alert_box') {
+            blockEl.innerHTML = createAlertBoxBlockHTML(data);
+        } else if (type === 'hero_banner') {
+            blockEl.innerHTML = createHeroBannerBlockHTML(data);
+        } else if (type === 'feature_list') {
+            blockEl.innerHTML = createFeatureListBlockHTML(data);
         }
 
         blockList.appendChild(blockEl);
@@ -350,6 +371,80 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>`;
     }
 
+    function createAlertBoxBlockHTML(data) {
+        const style = data?.style || 'info';
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Alerte')}
+        <div class="block-content">
+            <div class="grid grid-cols-4 gap-3 mb-3">
+                <select class="alert-style text-sm border-gray-300 rounded col-span-1">
+                    <option value="info" ${style === 'info' ? 'selected' : ''}>ℹ️ Info</option>
+                    <option value="success" ${style === 'success' ? 'selected' : ''}>✅ Succès</option>
+                    <option value="warning" ${style === 'warning' ? 'selected' : ''}>⚠️ Attention</option>
+                    <option value="error" ${style === 'error' ? 'selected' : ''}>❌ Erreur</option>
+                </select>
+                <input type="text" class="alert-title text-sm border-gray-300 rounded col-span-3" placeholder="Titre (optionnel)" value="${data?.title || ''}">
+            </div>
+            <textarea class="alert-content w-full text-sm border-gray-300 rounded" rows="3" placeholder="Contenu de l'alerte...">${data?.content || ''}</textarea>
+        </div>`;
+    }
+
+    function createHeroBannerBlockHTML(data) {
+        const gradient = data?.gradient || 'orange';
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg> Bandeau')}
+        <div class="block-content">
+            <div class="grid grid-cols-4 gap-3 mb-3">
+                <select class="hero-gradient text-sm border-gray-300 rounded">
+                    <option value="orange" ${gradient === 'orange' ? 'selected' : ''}>🟠 Orange</option>
+                    <option value="blue" ${gradient === 'blue' ? 'selected' : ''}>🔵 Bleu</option>
+                    <option value="cyan" ${gradient === 'cyan' ? 'selected' : ''}>🔷 Cyan</option>
+                    <option value="green" ${gradient === 'green' ? 'selected' : ''}>🟢 Vert</option>
+                    <option value="gray" ${gradient === 'gray' ? 'selected' : ''}>⚫ Gris</option>
+                    <option value="purple" ${gradient === 'purple' ? 'selected' : ''}>🟣 Violet</option>
+                </select>
+                <input type="text" class="hero-icon text-sm border-gray-300 rounded" placeholder="Emoji (ex: 🎯)" value="${data?.icon || ''}">
+                <input type="text" class="hero-title text-sm border-gray-300 rounded col-span-2" placeholder="Titre" value="${data?.title || ''}">
+            </div>
+            <input type="text" class="hero-subtitle w-full text-sm border-gray-300 rounded" placeholder="Sous-titre (optionnel)" value="${data?.subtitle || ''}">
+        </div>`;
+    }
+
+    function createFeatureListBlockHTML(data) {
+        const iconType = data?.icon_type || 'check';
+        const columns = data?.columns || 1;
+        const items = data?.items || [];
+        const itemsHTML = items.length > 0
+            ? items.map((item, i) => `
+                <div class="feature-item flex gap-2 items-start mb-2" data-index="${i}">
+                    <input type="text" class="feature-item-text flex-1 text-sm border-gray-300 rounded" placeholder="Élément ${i+1}" value="${item.text || ''}">
+                    <input type="text" class="feature-item-desc flex-1 text-sm border-gray-300 rounded" placeholder="Description (optionnel)" value="${item.description || ''}">
+                    <button type="button" class="remove-feature-item text-red-500 hover:text-red-700">&times;</button>
+                </div>
+            `).join('')
+            : '';
+
+        return `${createBlockHeader('<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg> Liste')}
+        <div class="block-content">
+            <div class="grid grid-cols-4 gap-3 mb-3">
+                <select class="feature-icon-type text-sm border-gray-300 rounded">
+                    <option value="check" ${iconType === 'check' ? 'selected' : ''}>✓ Coches</option>
+                    <option value="bullet" ${iconType === 'bullet' ? 'selected' : ''}>● Puces</option>
+                    <option value="number" ${iconType === 'number' ? 'selected' : ''}>1. Numéros</option>
+                    <option value="arrow" ${iconType === 'arrow' ? 'selected' : ''}>→ Flèches</option>
+                </select>
+                <select class="feature-columns text-sm border-gray-300 rounded">
+                    <option value="1" ${columns == 1 ? 'selected' : ''}>1 colonne</option>
+                    <option value="2" ${columns == 2 ? 'selected' : ''}>2 colonnes</option>
+                    <option value="3" ${columns == 3 ? 'selected' : ''}>3 colonnes</option>
+                </select>
+                <input type="text" class="feature-title text-sm border-gray-300 rounded col-span-2" placeholder="Titre (optionnel)" value="${data?.title || ''}">
+            </div>
+            <div class="feature-items-list mb-3">
+                ${itemsHTML}
+            </div>
+            <button type="button" class="add-feature-item text-sm text-club-orange hover:text-club-orange-dark">+ Ajouter un élément</button>
+        </div>`;
+    }
+
     function createWidgetBlockHTML(widgetType, data) {
         const label = widgetLabels[widgetType] || 'Widget';
         const configs = widgetConfigs[widgetType] || [];
@@ -368,9 +463,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </select>
                 </div>`;
             } else {
+                const autocompleteAttr = cfg.autocomplete ? `data-autocomplete="${cfg.autocomplete}"` : '';
                 configHTML += `<div class="mb-2">
                     <label class="text-xs font-medium text-blue-700">${cfg.label}</label>
-                    <input type="${cfg.type}" class="widget-cfg block w-full text-sm border-gray-300 rounded mt-1" data-key="${cfg.key}" value="${value}">
+                    <input type="${cfg.type}" class="widget-cfg block w-full text-sm border-gray-300 rounded mt-1" data-key="${cfg.key}" value="${value}" ${autocompleteAttr}>
                 </div>`;
             }
         });
@@ -623,6 +719,48 @@ document.addEventListener('DOMContentLoaded', function() {
         if (type === 'widget') {
             blockEl.querySelectorAll('.widget-cfg').forEach(el => el.addEventListener('change', () => saveBlocksData()));
         }
+
+        if (type === 'alert_box') {
+            blockEl.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', () => saveBlocksData()));
+        }
+
+        if (type === 'hero_banner') {
+            blockEl.querySelectorAll('input, select').forEach(el => el.addEventListener('input', () => saveBlocksData()));
+        }
+
+        if (type === 'feature_list') {
+            blockEl.querySelectorAll('.feature-icon-type, .feature-columns, .feature-title').forEach(el =>
+                el.addEventListener('input', () => saveBlocksData())
+            );
+
+            // Add feature item button
+            blockEl.querySelector('.add-feature-item')?.addEventListener('click', () => {
+                const list = blockEl.querySelector('.feature-items-list');
+                const index = list.querySelectorAll('.feature-item').length;
+                const itemEl = document.createElement('div');
+                itemEl.className = 'feature-item flex gap-2 items-start mb-2';
+                itemEl.dataset.index = index;
+                itemEl.innerHTML = `
+                    <input type="text" class="feature-item-text flex-1 text-sm border-gray-300 rounded" placeholder="Élément ${index+1}" value="">
+                    <input type="text" class="feature-item-desc flex-1 text-sm border-gray-300 rounded" placeholder="Description (optionnel)" value="">
+                    <button type="button" class="remove-feature-item text-red-500 hover:text-red-700">&times;</button>
+                `;
+                list.appendChild(itemEl);
+                bindFeatureItemEvents(itemEl);
+                saveBlocksData();
+            });
+
+            // Bind existing items
+            blockEl.querySelectorAll('.feature-item').forEach(item => bindFeatureItemEvents(item));
+        }
+    }
+
+    function bindFeatureItemEvents(itemEl) {
+        itemEl.querySelectorAll('input').forEach(el => el.addEventListener('input', () => saveBlocksData()));
+        itemEl.querySelector('.remove-feature-item')?.addEventListener('click', () => {
+            itemEl.remove();
+            saveBlocksData();
+        });
     }
 
     function selectBlockImage(blockEl) {
@@ -679,6 +817,32 @@ document.addEventListener('DOMContentLoaded', function() {
             const config = {};
             blockEl.querySelectorAll('.widget-cfg').forEach(el => { config[el.dataset.key] = el.value; });
             return { widget_type: blockEl.dataset.widgetType, config };
+        } else if (type === 'alert_box') {
+            return {
+                style: blockEl.querySelector('.alert-style')?.value || 'info',
+                title: blockEl.querySelector('.alert-title')?.value || '',
+                content: blockEl.querySelector('.alert-content')?.value || ''
+            };
+        } else if (type === 'hero_banner') {
+            return {
+                gradient: blockEl.querySelector('.hero-gradient')?.value || 'orange',
+                icon: blockEl.querySelector('.hero-icon')?.value || '',
+                title: blockEl.querySelector('.hero-title')?.value || '',
+                subtitle: blockEl.querySelector('.hero-subtitle')?.value || ''
+            };
+        } else if (type === 'feature_list') {
+            const items = [];
+            blockEl.querySelectorAll('.feature-item').forEach(item => {
+                const text = item.querySelector('.feature-item-text')?.value || '';
+                const description = item.querySelector('.feature-item-desc')?.value || '';
+                if (text) items.push({ text, description });
+            });
+            return {
+                icon_type: blockEl.querySelector('.feature-icon-type')?.value || 'check',
+                columns: parseInt(blockEl.querySelector('.feature-columns')?.value) || 1,
+                title: blockEl.querySelector('.feature-title')?.value || '',
+                items
+            };
         } else if (type === 'row') {
             const cells = [];
             blockEl.querySelectorAll('.row-cell').forEach(cell => {
@@ -725,7 +889,10 @@ document.addEventListener('DOMContentLoaded', function() {
             image: { url: '', alt: '', caption: '' },
             cta: { text: 'En savoir plus', url: '', style: 'primary' },
             widget: { widget_type: widgetType, config: {} },
-            row: { columns: 3, gap: 'normal', cells: [{colspan: 1}, {colspan: 1}, {colspan: 1}] }
+            row: { columns: 3, gap: 'normal', cells: [{colspan: 1}, {colspan: 1}, {colspan: 1}] },
+            alert_box: { style: 'info', title: '', content: '' },
+            hero_banner: { gradient: 'orange', icon: '', title: '', subtitle: '' },
+            feature_list: { icon_type: 'check', columns: 1, title: '', items: [] }
         };
         return defaults[type] || {};
     }
@@ -772,5 +939,46 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     {% endif %}
 });
+
+// Google Maps Places Autocomplete initialization
+function initGoogleMapsAutocomplete() {
+    // Fonction pour initialiser l'autocomplétion sur un champ
+    function setupAutocomplete(input) {
+        if (input.dataset.autocompleteInitialized) return;
+
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+            types: ['geocode', 'establishment'],
+            componentRestrictions: { country: 'fr' },
+            fields: ['formatted_address', 'name', 'geometry']
+        });
+
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place.formatted_address) {
+                input.value = place.formatted_address;
+                // Déclencher l'événement input pour sauvegarder les données
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+
+        input.dataset.autocompleteInitialized = 'true';
+    }
+
+    // Observer pour détecter les nouveaux champs d'adresse
+    const observer = new MutationObserver(function(mutations) {
+        document.querySelectorAll('[data-autocomplete="address"]:not([data-autocomplete-initialized])').forEach(setupAutocomplete);
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Initialiser les champs existants
+    document.querySelectorAll('[data-autocomplete="address"]').forEach(setupAutocomplete);
+}
+
+// Si l'API Google Maps n'est pas chargée, définir une fonction vide
+if (typeof window.initGoogleMapsAutocomplete === 'undefined') {
+    window.initGoogleMapsAutocomplete = function() {};
+}
 </script>
 {% endblock %}

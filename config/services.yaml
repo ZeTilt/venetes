@@ -77,6 +77,13 @@ services:
     App\Service\WidgetRenderer:
         arguments:
             $projectDir: '%kernel.project_dir%'
+            $googleMapsApiKey: '%env(GOOGLE_MAPS_API_KEY)%'
+
+    # Google Maps Twig Extension
+    App\Twig\GoogleMapsExtension:
+        arguments:
+            $googleMapsApiKey: '%env(GOOGLE_MAPS_API_KEY)%'
+        tags: ['twig.extension']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

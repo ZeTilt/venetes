@@ -417,6 +417,24 @@
                             </span>
                             <span class="text-sm font-medium">Bouton</span>
                         </button>
+                        <button type="button" class="block-type-option" data-type="alert_box" style="border-color: #fde68a;">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Alerte</span>
+                        </button>
+                        <button type="button" class="block-type-option" data-type="hero_banner" style="border-color: #c4b5fd;">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Bandeau</span>
+                        </button>
+                        <button type="button" class="block-type-option" data-type="feature_list" style="border-color: #a7f3d0;">
+                            <span class="icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                            </span>
+                            <span class="text-sm font-medium">Liste</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -721,6 +739,129 @@
     </div>
 </template>
 
+<template id="block-template-alert_box">
+    <div class="block-item" data-block-id="" data-block-type="alert_box">
+        <div class="block-header">
+            <span class="block-type-badge" style="background-color: #fef3c7;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                Alerte
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="grid grid-cols-4 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Type</label>
+                    <select class="alert-style block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="info">Info</option>
+                        <option value="success">Succès</option>
+                        <option value="warning">Attention</option>
+                        <option value="error">Erreur</option>
+                    </select>
+                </div>
+                <div class="col-span-3">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Titre (optionnel)</label>
+                    <input type="text" class="alert-title block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Titre de l'alerte...">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Contenu</label>
+                <textarea class="alert-content block w-full border-gray-300 rounded-md shadow-sm text-sm" rows="3" placeholder="Contenu de l'alerte..."></textarea>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="block-template-hero_banner">
+    <div class="block-item" data-block-id="" data-block-type="hero_banner">
+        <div class="block-header">
+            <span class="block-type-badge" style="background-color: #ede9fe;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                Bandeau
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="grid grid-cols-4 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Couleur</label>
+                    <select class="hero-gradient block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="orange">Orange</option>
+                        <option value="blue">Bleu</option>
+                        <option value="cyan">Cyan</option>
+                        <option value="green">Vert</option>
+                        <option value="gray">Gris</option>
+                        <option value="purple">Violet</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Emoji</label>
+                    <input type="text" class="hero-icon block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Ex: 🎯">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Titre</label>
+                    <input type="text" class="hero-title block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Titre du bandeau...">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Sous-titre (optionnel)</label>
+                <input type="text" class="hero-subtitle block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Sous-titre...">
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="block-template-feature_list">
+    <div class="block-item" data-block-id="" data-block-type="feature_list">
+        <div class="block-header">
+            <span class="block-type-badge" style="background-color: #d1fae5;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                Liste
+            </span>
+            <div class="block-actions">
+                <button type="button" class="block-action-btn move-up" title="Monter"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                <button type="button" class="block-action-btn move-down" title="Descendre"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                <button type="button" class="block-action-btn delete" title="Supprimer"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="grid grid-cols-4 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Icônes</label>
+                    <select class="feature-icon-type block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="check">Coches</option>
+                        <option value="bullet">Puces</option>
+                        <option value="number">Numéros</option>
+                        <option value="arrow">Flèches</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Colonnes</label>
+                    <select class="feature-columns block w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="1">1 colonne</option>
+                        <option value="2">2 colonnes</option>
+                        <option value="3">3 colonnes</option>
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Titre (optionnel)</label>
+                    <input type="text" class="feature-title block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Titre de la liste...">
+                </div>
+            </div>
+            <div class="feature-items-list mb-3"></div>
+            <button type="button" class="add-feature-item text-sm text-club-orange hover:text-club-orange-dark">+ Ajouter un élément</button>
+        </div>
+    </div>
+</template>
+
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
@@ -852,7 +993,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.style) blockEl.querySelector('.cta-style').value = data.style;
                 updateCtaPreview(blockEl);
                 break;
+            case 'alert_box':
+                if (data.style) blockEl.querySelector('.alert-style').value = data.style;
+                if (data.title) blockEl.querySelector('.alert-title').value = data.title;
+                if (data.content) blockEl.querySelector('.alert-content').value = data.content;
+                break;
+            case 'hero_banner':
+                if (data.gradient) blockEl.querySelector('.hero-gradient').value = data.gradient;
+                if (data.icon) blockEl.querySelector('.hero-icon').value = data.icon;
+                if (data.title) blockEl.querySelector('.hero-title').value = data.title;
+                if (data.subtitle) blockEl.querySelector('.hero-subtitle').value = data.subtitle;
+                break;
+            case 'feature_list':
+                if (data.icon_type) blockEl.querySelector('.feature-icon-type').value = data.icon_type;
+                if (data.columns) blockEl.querySelector('.feature-columns').value = data.columns;
+                if (data.title) blockEl.querySelector('.feature-title').value = data.title;
+                if (data.items && data.items.length > 0) {
+                    const list = blockEl.querySelector('.feature-items-list');
+                    data.items.forEach((item, i) => {
+                        addFeatureItemToList(list, item, i);
+                    });
+                }
+                break;
         }
+    }
+
+    function addFeatureItemToList(list, item, index) {
+        const div = document.createElement('div');
+        div.className = 'feature-item flex gap-2 items-start mb-2';
+        div.dataset.index = index;
+        div.innerHTML = `
+            <input type="text" class="feature-item-text flex-1 border-gray-300 rounded-md shadow-sm text-sm" placeholder="Élément ${index+1}" value="${item.text || ''}">
+            <input type="text" class="feature-item-desc flex-1 border-gray-300 rounded-md shadow-sm text-sm" placeholder="Description (optionnel)" value="${item.description || ''}">
+            <button type="button" class="feature-item-remove text-red-500 hover:text-red-700">&times;</button>
+        `;
+        div.querySelector('.feature-item-remove').addEventListener('click', function() {
+            div.remove();
+            saveBlocksData();
+        });
+        div.querySelectorAll('input').forEach(el => {
+            el.addEventListener('input', () => saveBlocksData());
+        });
+        list.appendChild(div);
     }
 
     function initializeBlockEditors(blockEl, type) {
@@ -964,6 +1146,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateCtaPreview(blockEl);
                     saveBlocksData();
                 });
+            });
+        }
+
+        if (type === 'alert_box') {
+            blockEl.querySelectorAll('input, select, textarea').forEach(el => {
+                el.addEventListener('input', () => saveBlocksData());
+            });
+        }
+
+        if (type === 'hero_banner') {
+            blockEl.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('input', () => saveBlocksData());
+            });
+        }
+
+        if (type === 'feature_list') {
+            blockEl.querySelectorAll('.feature-icon-type, .feature-columns, .feature-title').forEach(el => {
+                el.addEventListener('input', () => saveBlocksData());
+            });
+            blockEl.querySelector('.add-feature-item')?.addEventListener('click', function() {
+                const list = blockEl.querySelector('.feature-items-list');
+                const index = list.querySelectorAll('.feature-item').length;
+                addFeatureItemToList(list, {text: '', description: ''}, index);
+                saveBlocksData();
             });
         }
     }
@@ -1128,6 +1334,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     url: blockEl.querySelector('.cta-url')?.value || '#',
                     style: blockEl.querySelector('.cta-style')?.value || 'primary'
                 };
+            case 'alert_box':
+                return {
+                    style: blockEl.querySelector('.alert-style')?.value || 'info',
+                    title: blockEl.querySelector('.alert-title')?.value || '',
+                    content: blockEl.querySelector('.alert-content')?.value || ''
+                };
+            case 'hero_banner':
+                return {
+                    gradient: blockEl.querySelector('.hero-gradient')?.value || 'orange',
+                    icon: blockEl.querySelector('.hero-icon')?.value || '',
+                    title: blockEl.querySelector('.hero-title')?.value || '',
+                    subtitle: blockEl.querySelector('.hero-subtitle')?.value || ''
+                };
+            case 'feature_list':
+                const items = [];
+                blockEl.querySelectorAll('.feature-item').forEach(item => {
+                    const text = item.querySelector('.feature-item-text')?.value || '';
+                    const description = item.querySelector('.feature-item-desc')?.value || '';
+                    if (text) items.push({ text, description });
+                });
+                return {
+                    icon_type: blockEl.querySelector('.feature-icon-type')?.value || 'check',
+                    columns: parseInt(blockEl.querySelector('.feature-columns')?.value) || 1,
+                    title: blockEl.querySelector('.feature-title')?.value || '',
+                    items
+                };
             default:
                 return {};
         }
@@ -1140,7 +1372,10 @@ document.addEventListener('DOMContentLoaded', function() {
             gallery: { images: [], layout: 'grid', columns: 3 },
             video: { url: '', caption: '' },
             quote: { text: '', author: '' },
-            cta: { text: 'En savoir plus', url: '#', style: 'primary' }
+            cta: { text: 'En savoir plus', url: '#', style: 'primary' },
+            alert_box: { style: 'info', title: '', content: '' },
+            hero_banner: { gradient: 'orange', icon: '', title: '', subtitle: '' },
+            feature_list: { icon_type: 'check', columns: 1, title: '', items: [] }
         };
         return defaults[type] || {};
     }

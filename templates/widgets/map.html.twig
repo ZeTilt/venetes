@@ -3,8 +3,10 @@
         <h3 class="widget-title">{{ config.title }}</h3>
     {% endif %}
     <div class="widget-map-container">
+        {% if config.api_key is defined and config.api_key %}
+        {# Utiliser l'API Embed v1 avec clé #}
         <iframe
-            src="https://www.google.com/maps/embed/v1/place?key={{ config.api_key|default('') }}&q={{ address|url_encode }}&zoom={{ zoom }}"
+            src="https://www.google.com/maps/embed/v1/place?key={{ config.api_key }}&q={{ address|url_encode }}&zoom={{ zoom }}"
             width="100%"
             height="400"
             style="border:0; border-radius: 0.5rem;"
@@ -12,6 +14,18 @@
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade">
         </iframe>
+        {% else %}
+        {# Embed classique sans clé (comme l'ancien site) #}
+        <iframe
+            src="https://www.google.com/maps?q={{ address|url_encode }}&output=embed"
+            width="100%"
+            height="400"
+            style="border:0; border-radius: 0.5rem;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+        {% endif %}
     </div>
     {% if config.show_address|default(true) %}
         <p class="widget-map-address">

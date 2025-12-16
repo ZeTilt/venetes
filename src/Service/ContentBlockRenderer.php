@@ -74,6 +74,9 @@ class ContentBlockRenderer
             ContentBlock::TYPE_CTA => $this->renderCtaBlock($block),
             ContentBlock::TYPE_WIDGET => $this->renderWidgetBlock($block),
             ContentBlock::TYPE_ROW => $this->renderRowBlock($block),
+            ContentBlock::TYPE_ALERT_BOX => $this->renderAlertBoxBlock($block),
+            ContentBlock::TYPE_HERO_BANNER => $this->renderHeroBannerBlock($block),
+            ContentBlock::TYPE_FEATURE_LIST => $this->renderFeatureListBlock($block),
             default => '',
         };
     }
@@ -470,6 +473,163 @@ class ContentBlockRenderer
             $buttonClass,
             htmlspecialchars($text, ENT_QUOTES, 'UTF-8')
         );
+    }
+
+    /**
+     * Render an alert box block (info, success, warning, error)
+     */
+    private function renderAlertBoxBlock(ContentBlock $block): string
+    {
+        $content = $block->getAlertContent();
+        if (!$content) {
+            return '';
+        }
+
+        $title = $block->getAlertTitle();
+        $styleClasses = $block->getAlertStyleClasses();
+
+        $bgClass = $styleClasses['bg'];
+        $borderClass = $styleClasses['border'];
+        $textClass = $styleClasses['text'];
+        $iconType = $styleClasses['icon'];
+
+        // SVG icons for each alert type
+        $iconSvg = match ($iconType) {
+            'check' => '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>',
+            'warning' => '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
+            'error' => '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>',
+            default => '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>',
+        };
+
+        $html = sprintf(
+            '<div class="block-alert-box %s %s border-l-4 p-4 my-6 rounded-r-lg">',
+            $bgClass,
+            $borderClass
+        );
+
+        $html .= sprintf('<div class="flex items-start"><div class="%s mr-3 flex-shrink-0">%s</div>', $textClass, $iconSvg);
+        $html .= '<div class="flex-1">';
+
+        if ($title) {
+            $html .= sprintf('<h4 class="%s font-semibold mb-1">%s</h4>', $textClass, htmlspecialchars($title, ENT_QUOTES, 'UTF-8'));
+        }
+
+        $html .= sprintf('<div class="%s">%s</div>', $textClass, $content);
+        $html .= '</div></div></div>';
+
+        return $html;
+    }
+
+    /**
+     * Render a hero banner block with gradient background
+     */
+    private function renderHeroBannerBlock(ContentBlock $block): string
+    {
+        $title = $block->getHeroTitle();
+        if (!$title) {
+            return '';
+        }
+
+        $subtitle = $block->getHeroSubtitle();
+        $gradientClasses = $block->getHeroGradientClasses();
+        $icon = $block->getHeroIcon();
+
+        $html = sprintf(
+            '<div class="block-hero-banner bg-gradient-to-r %s text-white rounded-lg p-6 my-6">',
+            $gradientClasses
+        );
+
+        $html .= '<div class="flex items-center">';
+
+        if ($icon) {
+            $html .= sprintf(
+                '<div class="mr-4 text-4xl">%s</div>',
+                htmlspecialchars($icon, ENT_QUOTES, 'UTF-8')
+            );
+        }
+
+        $html .= '<div>';
+        $html .= sprintf(
+            '<h3 class="text-xl font-bold">%s</h3>',
+            htmlspecialchars($title, ENT_QUOTES, 'UTF-8')
+        );
+
+        if ($subtitle) {
+            $html .= sprintf(
+                '<p class="mt-1 opacity-90">%s</p>',
+                htmlspecialchars($subtitle, ENT_QUOTES, 'UTF-8')
+            );
+        }
+
+        $html .= '</div></div></div>';
+
+        return $html;
+    }
+
+    /**
+     * Render a feature list block with icons
+     */
+    private function renderFeatureListBlock(ContentBlock $block): string
+    {
+        $items = $block->getFeatureItems();
+        if (empty($items)) {
+            return '';
+        }
+
+        $title = $block->getFeatureTitle();
+        $iconType = $block->getFeatureIconType();
+        $columns = $block->getFeatureColumns();
+
+        // Generate icon SVG based on type
+        $getIcon = function (int $index) use ($iconType): string {
+            return match ($iconType) {
+                ContentBlock::FEATURE_ICON_CHECK => '<svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
+                ContentBlock::FEATURE_ICON_BULLET => '<span class="w-2 h-2 bg-club-orange rounded-full flex-shrink-0 mt-2"></span>',
+                ContentBlock::FEATURE_ICON_NUMBER => sprintf('<span class="w-6 h-6 bg-club-orange text-white rounded-full flex-shrink-0 flex items-center justify-center text-sm font-semibold">%d</span>', $index + 1),
+                ContentBlock::FEATURE_ICON_ARROW => '<svg class="w-5 h-5 text-club-orange flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>',
+                default => '<svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
+            };
+        };
+
+        $gridClass = match ($columns) {
+            2 => 'md:grid-cols-2',
+            3 => 'md:grid-cols-3',
+            default => '',
+        };
+
+        $html = '<div class="block-feature-list my-6">';
+
+        if ($title) {
+            $html .= sprintf(
+                '<h4 class="text-lg font-semibold text-gray-900 mb-4">%s</h4>',
+                htmlspecialchars($title, ENT_QUOTES, 'UTF-8')
+            );
+        }
+
+        $html .= sprintf('<ul class="grid %s gap-3">', $gridClass);
+
+        foreach ($items as $index => $item) {
+            $text = $item['text'] ?? '';
+            $description = $item['description'] ?? null;
+
+            $html .= '<li class="flex gap-3">';
+            $html .= $getIcon($index);
+            $html .= '<div>';
+            $html .= sprintf('<span class="text-gray-800">%s</span>', htmlspecialchars($text, ENT_QUOTES, 'UTF-8'));
+
+            if ($description) {
+                $html .= sprintf(
+                    '<p class="text-sm text-gray-500 mt-1">%s</p>',
+                    htmlspecialchars($description, ENT_QUOTES, 'UTF-8')
+                );
+            }
+
+            $html .= '</div></li>';
+        }
+
+        $html .= '</ul></div>';
+
+        return $html;
     }
 
     /**

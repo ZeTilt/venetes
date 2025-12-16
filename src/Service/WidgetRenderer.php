@@ -18,7 +18,8 @@ class WidgetRenderer
         private ArticleRepository $articleRepository,
         private EventRepository $eventRepository,
         private GalleryRepository $galleryRepository,
-        private string $projectDir
+        private string $projectDir,
+        private string $googleMapsApiKey = ''
     ) {}
 
     /**
@@ -133,6 +134,9 @@ class WidgetRenderer
     {
         $address = $config['address'] ?? 'Vannes, France';
         $zoom = (int) ($config['zoom'] ?? 14);
+
+        // Injecter la clé API dans la config
+        $config['api_key'] = $this->googleMapsApiKey;
 
         return $this->twig->render('widgets/map.html.twig', [
             'address' => $address,

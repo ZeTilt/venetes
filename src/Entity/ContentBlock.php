@@ -33,6 +33,9 @@ class ContentBlock
     public const TYPE_CTA = 'cta';
     public const TYPE_WIDGET = 'widget';
     public const TYPE_ROW = 'row';
+    public const TYPE_ALERT_BOX = 'alert_box';
+    public const TYPE_HERO_BANNER = 'hero_banner';
+    public const TYPE_FEATURE_LIST = 'feature_list';
 
     public const TYPES = [
         self::TYPE_TEXT => 'Texte',
@@ -44,7 +47,39 @@ class ContentBlock
         self::TYPE_CTA => 'Bouton d\'action',
         self::TYPE_WIDGET => 'Widget',
         self::TYPE_ROW => 'Ligne (grille)',
+        self::TYPE_ALERT_BOX => 'Boîte d\'alerte',
+        self::TYPE_HERO_BANNER => 'Bandeau héro',
+        self::TYPE_FEATURE_LIST => 'Liste à puces',
     ];
+
+    // Alert box styles
+    public const ALERT_INFO = 'info';
+    public const ALERT_SUCCESS = 'success';
+    public const ALERT_WARNING = 'warning';
+    public const ALERT_ERROR = 'error';
+
+    public const ALERT_STYLES = [
+        self::ALERT_INFO => ['bg' => 'bg-blue-50', 'border' => 'border-blue-400', 'text' => 'text-blue-800', 'icon' => 'info'],
+        self::ALERT_SUCCESS => ['bg' => 'bg-green-50', 'border' => 'border-green-400', 'text' => 'text-green-800', 'icon' => 'check'],
+        self::ALERT_WARNING => ['bg' => 'bg-yellow-50', 'border' => 'border-yellow-400', 'text' => 'text-yellow-800', 'icon' => 'warning'],
+        self::ALERT_ERROR => ['bg' => 'bg-red-50', 'border' => 'border-red-400', 'text' => 'text-red-800', 'icon' => 'error'],
+    ];
+
+    // Hero banner gradients
+    public const HERO_GRADIENTS = [
+        'orange' => 'from-club-orange to-club-orange-dark',
+        'blue' => 'from-blue-500 to-indigo-600',
+        'cyan' => 'from-cyan-500 to-blue-500',
+        'green' => 'from-green-500 to-emerald-600',
+        'gray' => 'from-gray-600 to-gray-800',
+        'purple' => 'from-purple-500 to-indigo-600',
+    ];
+
+    // Feature list icon types
+    public const FEATURE_ICON_CHECK = 'check';
+    public const FEATURE_ICON_BULLET = 'bullet';
+    public const FEATURE_ICON_NUMBER = 'number';
+    public const FEATURE_ICON_ARROW = 'arrow';
 
     // Widget types
     public const WIDGET_BLOG = 'blog';
@@ -498,5 +533,147 @@ class ContentBlock
         $config = $this->getWidgetConfig();
         $config[$key] = $value;
         return $this->setWidgetConfig($config);
+    }
+
+    // ========== ALERT_BOX block methods ==========
+
+    /**
+     * ALERT_BOX block: Get alert style (info, success, warning, error)
+     */
+    public function getAlertStyle(): string
+    {
+        return $this->get('style', self::ALERT_INFO);
+    }
+
+    public function setAlertStyle(string $style): static
+    {
+        return $this->set('style', $style);
+    }
+
+    public function getAlertTitle(): ?string
+    {
+        return $this->get('title');
+    }
+
+    public function setAlertTitle(?string $title): static
+    {
+        return $this->set('title', $title);
+    }
+
+    public function getAlertContent(): string
+    {
+        return $this->get('content', '');
+    }
+
+    public function setAlertContent(string $content): static
+    {
+        return $this->set('content', $content);
+    }
+
+    public function getAlertStyleClasses(): array
+    {
+        return self::ALERT_STYLES[$this->getAlertStyle()] ?? self::ALERT_STYLES[self::ALERT_INFO];
+    }
+
+    // ========== HERO_BANNER block methods ==========
+
+    /**
+     * HERO_BANNER block: Get banner gradient
+     */
+    public function getHeroGradient(): string
+    {
+        return $this->get('gradient', 'orange');
+    }
+
+    public function setHeroGradient(string $gradient): static
+    {
+        return $this->set('gradient', $gradient);
+    }
+
+    public function getHeroGradientClasses(): string
+    {
+        return self::HERO_GRADIENTS[$this->getHeroGradient()] ?? self::HERO_GRADIENTS['orange'];
+    }
+
+    public function getHeroTitle(): string
+    {
+        return $this->get('title', '');
+    }
+
+    public function setHeroTitle(string $title): static
+    {
+        return $this->set('title', $title);
+    }
+
+    public function getHeroSubtitle(): ?string
+    {
+        return $this->get('subtitle');
+    }
+
+    public function setHeroSubtitle(?string $subtitle): static
+    {
+        return $this->set('subtitle', $subtitle);
+    }
+
+    public function getHeroIcon(): ?string
+    {
+        return $this->get('icon');
+    }
+
+    public function setHeroIcon(?string $icon): static
+    {
+        return $this->set('icon', $icon);
+    }
+
+    // ========== FEATURE_LIST block methods ==========
+
+    /**
+     * FEATURE_LIST block: Get list items
+     */
+    public function getFeatureItems(): array
+    {
+        return $this->get('items', []);
+    }
+
+    public function setFeatureItems(array $items): static
+    {
+        return $this->set('items', $items);
+    }
+
+    public function addFeatureItem(string $text, ?string $description = null): static
+    {
+        $items = $this->getFeatureItems();
+        $items[] = ['text' => $text, 'description' => $description];
+        return $this->setFeatureItems($items);
+    }
+
+    public function getFeatureIconType(): string
+    {
+        return $this->get('icon_type', self::FEATURE_ICON_CHECK);
+    }
+
+    public function setFeatureIconType(string $iconType): static
+    {
+        return $this->set('icon_type', $iconType);
+    }
+
+    public function getFeatureTitle(): ?string
+    {
+        return $this->get('title');
+    }
+
+    public function setFeatureTitle(?string $title): static
+    {
+        return $this->set('title', $title);
+    }
+
+    public function getFeatureColumns(): int
+    {
+        return $this->get('columns', 1);
+    }
+
+    public function setFeatureColumns(int $columns): static
+    {
+        return $this->set('columns', $columns);
     }
 }
