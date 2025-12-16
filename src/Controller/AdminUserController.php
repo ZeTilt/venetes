@@ -9,8 +9,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/users')]
@@ -20,7 +23,8 @@ class AdminUserController extends AbstractController
     public function __construct(
         private UserRepository $userRepository,
         private EntityManagerInterface $entityManager,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
+        private MailerInterface $mailer
     ) {}
 
     #[Route('', name: 'admin_users_list')]
@@ -171,7 +175,47 @@ class AdminUserController extends AbstractController
         $this->entityManager->flush();
 
         $this->addFlash('warning', "Inscription de {$user->getFullName()} rejetée.");
-        
+
         return $this->redirectToRoute('admin_users_list');
+    }
+
+    #[Route('/{id}/resend-verification', name: 'admin_users_resend_verification')]
+    public function resendVerification(User $user): Response
+    {
+        if ($user->isEmailVerified()) {
+            $this->addFlash('warning', 'L\'adresse email de cet utilisateur est déjà vérifiée.');
+            return $this->redirectToRoute('admin_users_edit', ['id' => $user->getId()]);
+        }
+
+        // Générer un nouveau token si nécessaire
+        if (!$user->getEmailVerificationToken()) {
+            $user->generateEmailVerificationToken();
+            $this->entityManager->flush();
+        }
+
+        // Envoyer l'email
+        $verificationUrl = $this->generateUrl('app_verify_email',
+            ['token' => $user->getEmailVerificationToken()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $fromEmail = $_ENV['MAILER_FROM'] ?? 'no-reply@plongee-venetes.fr';
+        $email = (new Email())
+            ->from($fromEmail)
+            ->to($user->getEmail())
+            ->subject('Vérification de votre adresse email - Club Subaquatique des Vénètes')
+            ->html($this->renderView('emails/verify_email.html.twig', [
+                'user' => $user,
+                'verification_url' => $verificationUrl
+            ]));
+
+        try {
+            $this->mailer->send($email);
+            $this->addFlash('success', "Email de vérification renvoyé à {$user->getEmail()}.");
+        } catch (\Exception $e) {
+            $this->addFlash('error', "Erreur lors de l'envoi de l'email : " . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('admin_users_edit', ['id' => $user->getId()]);
     }
 }
