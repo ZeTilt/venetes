@@ -212,17 +212,18 @@
 <section class="cta-section">
     <div class="cta-container">
         <div class="cta-content">
-            <h2 class="cta-title">Prêt à plonger avec nous ?</h2>
+            <h2 class="cta-title">{{ site_config('home_cta_title')|default('Prêt à plonger avec nous ?') }}</h2>
             <p class="cta-text">
-                Rejoignez le Club Subaquatique des Vénètes et découvrez les merveilles des fonds marins.
-                Formation, convivialité et aventure vous attendent !
+                {{ site_config('home_cta_text')|default('Rejoignez le Club Subaquatique des Vénètes et découvrez les merveilles des fonds marins. Formation, convivialité et aventure vous attendent !') }}
             </p>
             <div class="cta-buttons">
-                <a href="{{ path('public_page_show', {slug: 'tarifs-2025'}) }}" class="cta-btn cta-btn-primary">
-                    Voir nos tarifs
+                {% set btn1_url = site_config('home_cta_btn1_url')|default('/tarifs-2025') %}
+                <a href="{{ btn1_url starts with '/' ? btn1_url : btn1_url }}" class="cta-btn cta-btn-primary">
+                    {{ site_config('home_cta_btn1_text')|default('Voir nos tarifs') }}
                 </a>
-                <a href="#contact" class="cta-btn cta-btn-secondary">
-                    Nous contacter
+                {% set btn2_url = site_config('home_cta_btn2_url')|default('/contact') %}
+                <a href="{{ btn2_url starts with '/' ? btn2_url : btn2_url }}" class="cta-btn cta-btn-secondary">
+                    {{ site_config('home_cta_btn2_text')|default('Nous contacter') }}
                 </a>
             </div>
         </div>

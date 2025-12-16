@@ -77,6 +77,33 @@ class AdminConfigController extends AbstractController
             }
         }
 
+        // Handle homepage CTA config
+        $homeCtaTitle = $request->request->get('home_cta_title');
+        $homeCtaText = $request->request->get('home_cta_text');
+        $homeCtaBtn1Text = $request->request->get('home_cta_btn1_text');
+        $homeCtaBtn1Url = $request->request->get('home_cta_btn1_url');
+        $homeCtaBtn2Text = $request->request->get('home_cta_btn2_text');
+        $homeCtaBtn2Url = $request->request->get('home_cta_btn2_url');
+
+        if ($homeCtaTitle) {
+            $this->siteConfigService->set('home_cta_title', $homeCtaTitle, 'Titre CTA page d\'accueil');
+        }
+        if ($homeCtaText) {
+            $this->siteConfigService->set('home_cta_text', $homeCtaText, 'Texte CTA page d\'accueil');
+        }
+        if ($homeCtaBtn1Text) {
+            $this->siteConfigService->set('home_cta_btn1_text', $homeCtaBtn1Text, 'Bouton 1 - Texte');
+        }
+        if ($homeCtaBtn1Url) {
+            $this->siteConfigService->set('home_cta_btn1_url', $homeCtaBtn1Url, 'Bouton 1 - URL');
+        }
+        if ($homeCtaBtn2Text) {
+            $this->siteConfigService->set('home_cta_btn2_text', $homeCtaBtn2Text, 'Bouton 2 - Texte');
+        }
+        if ($homeCtaBtn2Url) {
+            $this->siteConfigService->set('home_cta_btn2_url', $homeCtaBtn2Url, 'Bouton 2 - URL');
+        }
+
         // Handle hero images
         $existingHeroImages = json_decode($request->request->get('hero_images', '[]'), true) ?: [];
         $heroFiles = $request->files->get('hero_images_upload');
