@@ -12,7 +12,7 @@ YELLOW = \033[0;33m
 RED = \033[0;31m
 NC = \033[0m # No Color
 
-.PHONY: help install install-dev start dev dev-stop dev-status stop test lint fix migrate cache-clear assets deploy status
+.PHONY: help install install-dev start dev dev-stop dev-status stop test lint fix migrate cache-clear assets deploy status push push-main deploy-remote
 
 help: ## Affiche cette aide
 	@echo "$(GREEN)Makefile pour le site de plongée$(NC)"
@@ -133,6 +133,27 @@ user-create-prod: ## Crée un utilisateur admin (production)
 	$(PHP) bin/console app:create-admin --env=prod
 
 # Commandes de déploiement
+DEPLOY_URL = https://beta.plongee-venetes.fr/deploy.php?token=9e09431816b075ff16d3494e28f413bf
+
+push: ## Push sur release + déploiement auto OVH
+	@echo "$(GREEN)📤 Push sur origin/release...$(NC)"
+	git push origin release
+	@echo "$(GREEN)🚀 Déclenchement du déploiement OVH...$(NC)"
+	@curl -s "$(DEPLOY_URL)" | tail -20
+	@echo "$(GREEN)✅ Déploiement terminé$(NC)"
+
+push-main: ## Push sur main + déploiement auto OVH
+	@echo "$(GREEN)📤 Push sur origin/main...$(NC)"
+	git push origin main
+	@echo "$(GREEN)🚀 Déclenchement du déploiement OVH...$(NC)"
+	@curl -s "$(DEPLOY_URL)" | tail -20
+	@echo "$(GREEN)✅ Déploiement terminé$(NC)"
+
+deploy-remote: ## Déclenche le déploiement OVH sans push
+	@echo "$(GREEN)🚀 Déclenchement du déploiement OVH...$(NC)"
+	@curl -s "$(DEPLOY_URL)"
+	@echo ""
+
 deploy-check: ## Vérifie avant déploiement
 	@echo "$(GREEN)🔍 Vérifications avant déploiement...$(NC)"
 	$(COMPOSER) validate --no-check-publish --no-check-all
