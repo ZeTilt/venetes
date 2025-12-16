@@ -100,6 +100,10 @@ class Event
     #[ORM\JoinColumn(nullable: true)]
     private ?User $divingDirector = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $lifeguard = null;
+
     #[ORM\ManyToOne(targetEntity: Boat::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?Boat $boat = null;
@@ -712,6 +716,17 @@ class Event
     public function setDivingDirector(?User $divingDirector): static
     {
         $this->divingDirector = $divingDirector;
+        return $this;
+    }
+
+    public function getLifeguard(): ?User
+    {
+        return $this->lifeguard;
+    }
+
+    public function setLifeguard(?User $lifeguard): static
+    {
+        $this->lifeguard = $lifeguard;
         return $this;
     }
 

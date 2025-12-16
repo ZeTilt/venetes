@@ -145,4 +145,56 @@ class EventRegistrationController extends AbstractController
             'participations' => $participations,
         ]);
     }
+
+    #[Route('/{id}/volunteer-lifeguard', name: 'event_volunteer_lifeguard', methods: ['POST'])]
+    public function volunteerAsLifeguard(Event $event): Response
+    {
+        $user = $this->getUser();
+
+        // Vérifier que l'utilisateur est surveillant de baignade
+        if (!$user->isLifeguard()) {
+            $this->addFlash('error', 'Vous devez être surveillant de baignade pour vous proposer.');
+            return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
+        }
+
+        // Vérifier que le type d'événement nécessite un surveillant
+        if (!$event->getEventType() || !$event->getEventType()->requiresLifeguard()) {
+            $this->addFlash('error', 'Cet événement ne nécessite pas de surveillant de baignade.');
+            return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
+        }
+
+        // Vérifier qu'il n'y a pas déjà un surveillant assigné
+        if ($event->getLifeguard() !== null) {
+            $this->addFlash('error', 'Un surveillant de baignade est déjà assigné à cet événement.');
+            return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
+        }
+
+        // Assigner l'utilisateur comme surveillant
+        $event->setLifeguard($user);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vous êtes maintenant le surveillant de baignade pour cet événement.');
+
+        return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/unvolunteer-lifeguard', name: 'event_unvolunteer_lifeguard', methods: ['POST'])]
+    public function unvolunteerAsLifeguard(Event $event): Response
+    {
+        $user = $this->getUser();
+
+        // Vérifier que l'utilisateur est bien le surveillant assigné
+        if ($event->getLifeguard() !== $user) {
+            $this->addFlash('error', 'Vous n\'êtes pas le surveillant assigné à cet événement.');
+            return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
+        }
+
+        // Retirer l'utilisateur comme surveillant
+        $event->setLifeguard(null);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vous n\'êtes plus le surveillant de baignade pour cet événement.');
+
+        return $this->redirectToRoute('calendar_event_detail', ['id' => $event->getId()]);
+    }
 }
